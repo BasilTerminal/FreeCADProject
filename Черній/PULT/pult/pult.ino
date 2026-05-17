@@ -3,15 +3,20 @@
 
 const int8_t Rele = 2;
 const int8_t Buzer = 3;
-const int8_t BuzerLed = 4;
+const int8_t BuzerLED = 4;
 const int8_t RFin = 8;
 
-const char pult1cl[] = { 0x2, 0x2E, 0x62, 0xF9, 0x49, 0xCB, 0xF9, 0x4B };
-const char pult1op[] = { 0x2, 0x2E, 0x62, 0xF9, 0x49, 0xCB, 0xF9, 0x79 };
-const char pult2cl[] = { 0x2, 0x22, 0x2E, 0xFB, 0xFB, 0x49, 0xF9, 0x4B };
-const char pult2op[] = { 0x2, 0x22, 0x2E, 0xFB, 0xFB, 0x49, 0xF9, 0x79 };
+const char pult1cl[] = { 0x2E, 0x62, 0xF9, 0x49, 0xCB, 0xF9, 0x4B, 0 };
+const char pult1op[] = { 0x2E, 0x62, 0xF9, 0x49, 0xCB, 0xF9, 0x79, 0 };
+const char pult2cl[] = { 0x22, 0x2E, 0xFB, 0xFB, 0x49, 0xF9, 0x4B, 0 };
+const char pult2op[] = { 0x22, 0x2E, 0xFB, 0xFB, 0x49, 0xF9, 0x79, 0 };
 
-char inbuf[16] = "";
+
+
+
+
+#define SIZEBUF 16
+char inbuf[SIZEBUF] = "";
 
 static void (*STATE)();
 #include <SoftwareSerial.h>
@@ -25,50 +30,40 @@ void setup() {
 
   pinMode(Rele, OUTPUT);
   pinMode(Buzer, OUTPUT);
-  pinMode(BuzerLed, OUTPUT);
+  pinMode(BuzerLED, OUTPUT);
   pinMode(RFin, INPUT);
 
-  digitalWrite(Rele, HIGH);
-  delay(500);
-  digitalWrite(Rele, LOW);
+  // digitalWrite(Rele, HIGH);
+  // delay(500);
+  // digitalWrite(Rele, LOW);
 
-  digitalWrite(Buzer, HIGH);
-  delay(100);
-  digitalWrite(Buzer, LOW);
-
-  digitalWrite(BuzerLed, HIGH);
-  delay(100);
-  digitalWrite(BuzerLed, LOW);
-
+  sound1();
+  sound2();
 
   STATE = &state01;
 
-  mySerial.setTimeout(10);
+  mySerial.setTimeout(5);
 }
 
 void loop() {
   char* p;
 
-
-  if (mySerial.available() > 16) {
-
-    //char a=mySerial.read();
-
-    for (byte i = 0; i < 16; i++) {
+  if (mySerial.available() > SIZEBUF) {
+    for (byte i = 0; i < SIZEBUF; i++) {
       inbuf[i] = mySerial.read();
-        }
+    }
 
     p = strstr(inbuf, pult1op);
-    if (p != NULL) { Serial.println("Pult 1 open"); }
+    if (p) { sound1(); Serial.println("Pult 1 open"); }
 
     p = strstr(inbuf, pult2op);
-    if (p != NULL) { Serial.println("Pult 2 open"); }
+    if (p) { sound1(); Serial.println("Pult 2 open"); }
 
     p = strstr(inbuf, pult1cl);
-    if (p != NULL) { Serial.println("Pult 1 close"); }
+    if (p) { sound2(); Serial.println("Pult 1 close"); }
 
     p = strstr(inbuf, pult2cl);
-    if (p != NULL) { Serial.println("Pult 2 close"); }
+    if (p) { sound2(); Serial.println("Pult 2 close"); }
   }
 
   //(*STATE)();
@@ -94,7 +89,17 @@ void state02() {
 }
 
 
+void sound1() {
+  digitalWrite(Buzer, HIGH);
+  delay(40);
+  digitalWrite(Buzer, LOW);
+}
 
+void sound2() {
+  digitalWrite(BuzerLED, HIGH);
+  delay(40);
+  digitalWrite(BuzerLED, LOW);
+}
 
 
 void updateIndicationByInnerState() {
