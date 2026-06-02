@@ -181,6 +181,8 @@ void MotorStart() {
 void SoundStart() {
   sound1();
   sound1();
+  sound1();
+  sound1();
 }
 
 // вимикаємо двигун
