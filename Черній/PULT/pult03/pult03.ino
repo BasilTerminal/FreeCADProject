@@ -201,7 +201,7 @@ byte KeyPultPressed() {  // чи натискали кнопку пульта
   byte flag = 0;
 
   //mySerial.begin(2400);
-   pinMode(RFin, INPUT);
+  pinMode(RFin, INPUT);
   delay(50);
 
   if (mySerial.available() > SIZEBUF) {
@@ -220,7 +220,7 @@ byte KeyPultPressed() {  // чи натискали кнопку пульта
     Serial.println(flag);
   }
 
-   pinMode(RFin, OUTPUT);
+  pinMode(RFin, OUTPUT);
   //mySerial.end();
   return flag;
 }
